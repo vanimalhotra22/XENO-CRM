@@ -36,6 +36,7 @@ const CAMPAIGN_PRESETS = [
 ];
 
 export default function CampaignsPage() {
+  const channelServiceUrl = process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL || 'http://localhost:3001';
   const [campaigns, setCampaigns] = useState([]);
   const campaignsRef = useRef([]);
   useEffect(() => {
@@ -85,7 +86,7 @@ export default function CampaignsPage() {
 
   const loadSimulatorSettings = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/settings");
+      const res = await fetch(`${channelServiceUrl}/api/settings`);
       const data = await res.json();
       setSimulateFailures(data.simulateFailures);
       setDeliveryRate(data.deliveryRate);
@@ -122,7 +123,7 @@ export default function CampaignsPage() {
     if (updates.clickRate !== undefined) setClickRate(updates.clickRate);
 
     try {
-      await fetch("http://localhost:3001/api/settings", {
+      await fetch(`${channelServiceUrl}/api/settings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newSettings),

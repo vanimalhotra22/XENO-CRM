@@ -32,7 +32,8 @@ export default function Navbar() {
   // Check Channel Service Health periodically
   const checkChannelHealth = async () => {
     try {
-      const res = await fetch('http://localhost:3001/health', {
+      const channelServiceUrl = process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL || 'http://localhost:3001';
+      const res = await fetch(`${channelServiceUrl}/health`, {
         mode: 'cors',
         signal: AbortSignal.timeout(2000)
       });
