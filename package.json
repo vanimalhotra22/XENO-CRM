@@ -1,0 +1,36 @@
+{
+  "name": "xeno-crm",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev:next": "next dev",
+    "dev:channel": "node channel-service/server.js",
+    "dev": "concurrently -n \"next,channel\" -c \"blue,green\" \"npm run dev:next\" \"npm run dev:channel\"",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "prisma:seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "concurrently": "^10.0.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "lucide-react": "^1.17.0",
+    "next": "^15.1.0",
+    "openai": "^6.42.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "react-hook-form": "^7.78.0",
+    "recharts": "^3.8.1",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "^15.1.0",
+    "prisma": "^5.22.0",
+    "tailwindcss": "^4"
+  }
+}

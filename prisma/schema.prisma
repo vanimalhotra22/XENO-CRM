@@ -1,0 +1,106 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("MARKETER")
+  createdAt DateTime @default(now())
+}
+
+model Customer {
+  id             String          @id @default(uuid())
+  name           String
+  email          String          @unique
+  phone          String?
+  city           String?
+  gender         String?
+  createdAt      DateTime        @default(now())
+  orders         Order[]
+  communications Communication[]
+}
+
+model Order {
+  id         String   @id @default(uuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  amount     Float
+  items      String // JSON string representing array of items
+  status     String // PENDING, DELIVERED, CANCELLED
+  createdAt  DateTime @default(now())
+}
+
+model Segment {
+  id            String     @id @default(uuid())
+  name          String
+  description   String?
+  query         String // JSON representation of filter rules
+  customerCount Int        @default(0)
+  createdAt     DateTime   @default(now())
+  campaigns     Campaign[]
+}
+
+model Campaign {
+  id               String          @id @default(uuid())
+  name             String
+  segmentId        String
+  segment          Segment         @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+  channel          String // EMAIL, SMS, WHATSAPP
+  message          String // Message with placeholders: {{name}}, {{firstName}}, {{lastPurchase}}
+  status           String          @default("DRAFT") // DRAFT, SENDING, SENT, FAILED
+  sentCount        Int             @default(0)
+  deliveredCount   Int             @default(0)
+  openedCount      Int             @default(0)
+  clickedCount     Int             @default(0)
+  failedCount      Int             @default(0)
+  revenueGenerated Float           @default(0.0)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  communications   Communication[]
+
+  // AI-Powered & Submission features
+  isAbTest         Boolean         @default(false)
+  messageB         String?         // Version B Message
+  sentCountB       Int             @default(0)
+  openedCountB     Int             @default(0)
+  clickedCountB    Int             @default(0)
+  winner           String?         // "A" or "B"
+  aiSummary        String?         // AI Generated Post-Campaign Summary
+  channelRecommend String?         // Reason for recommending this channel
+}
+
+model Communication {
+  id            String   @id @default(uuid())
+  campaignId    String
+  campaign      Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  customerId    String
+  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  status        String   @default("PENDING") // PENDING, SENT, DELIVERED, OPENED, CLICKED, FAILED, RETRYING, DLQ
+  timestamp     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  variant       String   @default("A")       // "A" or "B" for A/B Testing
+  retryCount    Int      @default(0)
+  failureReason String?
+  retryLogs     String?                      // JSON string representing logs: [{"time": "12:00", "event": "...", "status": "..."}]
+
+  @@index([campaignId])
+  @@index([customerId])
+}
+
+model AgentRun {
+  id        String   @id @default(uuid())
+  goal      String
+  status    String   @default("RUNNING") // RUNNING, COMPLETED, FAILED
+  steps     String // JSON array of steps: [{time: string, message: string, status: string}]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
