@@ -1,121 +1,139 @@
-# Xeno AI-Native Shopper CRM
+# Xeno AI-Native Shopper CRM & Webhook Simulator
 
-An engineering take-home assignment implementation for **Xeno**. This project is a working, production-ready AI-Native Mini CRM designed for D2C/retail brands to reach shoppers intelligently. It features automated segment generation, conversational AI copywriting, and a **Level 5 Autonomous AI Agent** that executes and monitors marketing campaigns end-to-end.
+An engineering-grade, production-ready **AI-Native Mini CRM** designed for D2C/retail brands to reach shoppers intelligently. It features automated segment generation, conversational AI copywriting, an asynchronous webhook callback pipeline, and robust resilience simulation (automated retries and Dead Letter Queues).
+
+This workspace has been converted to standard **ES6 JavaScript/JSX** with clean path mapping, a responsive top navigation bar, and advanced user session gateways.
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## 📐 System Architecture & Webhook Loop
 
-- **Frontend**: Next.js 15 (App Router), TypeScript, Tailwind CSS, Lucide Icons, Recharts
-- **Database**: Prisma ORM, SQLite (local database for zero-setup ease of evaluation)
-- **Services**: Express.js (independent Channel Service running on port 3001)
-- **AI Engine**: Dual-mode AI Service (uses OpenAI GPT-4o if a key is provided, falls back to a smart rule-based NLP parser if missing)
-- **Queue System**: Dual-mode queue (in-memory async queue processor by default, supports BullMQ + Redis if configured)
+The system operates as a decoupled dual-service architecture to simulate real-world asynchronous messaging flows:
 
 ```
-                ┌──────────────┐
-                │   Next.js    │
-                │ Frontend UI  │
-                └──────┬───────┘
-                       │
-                       ▼
-                ┌──────────────┐
-                │ API Routes   │
-                │ Server Layer │
-                └──────┬───────┘
-                       │
-        ┌──────────────┼──────────────┐
-        ▼              ▼              ▼
-   Prisma DB       OpenAI API    In-Memory Queue
- (SQLite/Postgres) (or NLP Mock)  (or BullMQ)
-                       │
-                       ▼
+                  ┌─────────────────┐
+                  │   Next.js 15    │
+                  │   CRM Frontend  │
+                  └────────┬────────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │   Prisma ORM    │
+                  │ (SQLite / Pg)   │
+                  └────────┬────────┘
+                           │
+           ┌───────────────┼───────────────┐
+           ▼               ▼               ▼
+      OpenAI API     In-Memory Queue   Session Gate
+    (or NLP Mock)    (Async Retries)  (Google/Cookie)
+                           │
+                           ▼
               Channel Service (Port 3001)
-              (Asynchronous dispatch callback)
-                       │
-                       ▼
-               POST /api/callback
-            (Attributes revenue & updates stats)
+            (Asynchronous simulation delay)
+                           │
+                           ▼
+                  POST /api/callback
+             (Attributes revenue & updates stats)
 ```
 
 ---
 
-## 🚀 Getting Started in 2 Minutes
+## 🛠️ Tech Stack & Production Standards
 
-Follow these quick commands to spin up the local development environment:
+* **Frontend Framework**: Next.js 15 (App Router, JavaScript, Tailwind CSS, Recharts, Lucide Icons).
+* **Database & ORM**: Prisma ORM with support for SQLite (local zero-setup evaluation) and PostgreSQL (production).
+* **Authentication**: Dual-method authentication wrapper (`AuthGuard.jsx`):
+  * **Google Sign-In**: Powered by Google Identity Services, auto-registering new users and decoding JWTs securely.
+  * **Traditional Sign-In**: SHA-256 password hashing via Node's `crypto` module.
+  * **Sessions**: Managed via secure, HTTP-Only cookies (`xeno-session`).
+* **Background Processing**: Asynchronous in-memory queue processor with built-in retry backoff scheduler.
+* **Microservices**: Independent Express.js Channel Simulator (port 3001) hosting callback emitters.
+
+---
+
+## 🌟 Advanced Features (Interviewer "Wow" Factors)
+
+### 1. 🧪 A/B Testing Variant Engine
+- **50/50 Audience Split**: When crafting a campaign, check "Enable A/B Testing" to specify a control (Variant A) and optimized copy (Variant B).
+- **Variant Analytics**: Tracks distinct stats (Sent, Clicked, CTR) for each variant.
+- **Winner Attribution**: Automatically compares click-through rates upon campaign completion and crowns the winner (Variant A or B) in the database.
+
+### 2. 🔌 Webhook Resilience Simulator & Auto-Retry Loop
+- **Disruption Toggles**: Simulate message delivery delays, open rates, and click rates.
+- **Error Simulation**: If enabled, the channel service randomly throws provider-level errors: `EMAIL_BOUNCED`, `INVALID_NUMBER`, or `RATE_LIMITED`.
+- **CRM Retry Engine (3 Strikes)**: Bounced messages automatically transition to a `RETRYING` state. The CRM schedules a deferred retry dispatch after a 2-second delay.
+- **Dead Letter Queue (DLQ)**: If a message fails 3 times, it is permanently quarantined in the DLQ with status `DLQ` and retry logs are committed for audits.
+
+### 3. 🧠 Smart Channel Recommendation Advisor
+- **Profile Diagnostics**: Analyzes the demographics and spend histories of the selected audience segment.
+- **1-Click Apply**: Recommends the highest-performing channel (Email, SMS, or WhatsApp) based on LTV values or churn risks (e.g. *"VIP shoppers convert 23% better on detailed email layouts"*).
+
+### 4. 🎛️ Dynamic Ledger Sliders & Scroll Bounds
+- **Interactive Range Sliders**: Adjust the displaying row count dynamically (5 to 50 rows) next to search filters in the Customers and Orders ledger tables.
+- **Bounded Viewports**: Tables scroll inside bounded vertical boxes (`max-h-[500px] overflow-y-auto`) to stay visually aligned with diagnostic side panels.
+
+### 5. 📄 Corporate PDF Report Exporter
+- Completed campaigns render an **"Export Report"** button.
+- Uses dedicated CSS print styles (`print:hidden` and `hidden print:block`) to output a professional double-column Performance & Delivery Audit document.
+
+---
+
+## 🚀 Getting Started locally
 
 ### 1. Install Dependencies
 ```bash
 npm install
 ```
 
-### 2. Set Up the Database
-Generate the Prisma Client and load our SQLite database schema:
+### 2. Set Up the Local Database
+Generate the Prisma client and push the schema to SQLite:
 ```bash
+npx prisma generate
 npx prisma db push
 ```
 
-### 3. Seed Shopper & Order Logs
-Populate the database with 50+ mock customer records, 140+ transaction logs (spanning the last 90 days), and predefined marketing segments:
+### 3. Seed Database Mock Data
+Populate the SQLite ledger with 50+ mock customer records, 140+ transaction logs (spanning the last 90 days), and default segment rules:
 ```bash
 npm run prisma:seed
 ```
 
 ### 4. Run Development Servers
-Start both the **Next.js app** (port 3000) and the independent **Channel Service** (port 3001) concurrently:
+Start the Next.js CRM (port 3000) and the Channel Service (port 3001) concurrently:
 ```bash
 npm run dev
 ```
 
 Visit **[http://localhost:3000](http://localhost:3000)** in your browser!
 
-*Note: To test using real OpenAI GPT-4o, add your key to a `.env` file at the root: `OPENAI_API_KEY=your-api-key`. If omitted, the app automatically switches to a smart NLP rule-based fallback so that all AI Segment Builders, AI Copilots, and AI Agent dispatches remain fully functional.*
-
 ---
 
-## 🌟 Core Features Walkthrough
+## 📦 Production Deployment Steps
 
-### 1. Interactive Marketer Dashboard
-- **Aggregate KPIs**: Displays Total Shoppers, LTV Revenue, active Campaigns, and aggregate funnel rates (Open, Click-Through, Conversion).
-- **Interactive Visualizations**: Renders area charts for daily revenue, side-by-side bar charts for campaign funnels, and customer growth lines.
-- **Top Spenders Leaderboard**: Sorts and lists the most valuable customers.
+### Database Migration (SQLite to PostgreSQL)
+SQLite database files are read-only and ephemeral on serverless hosting like Vercel. For production, switch your database connection to a cloud database provider (e.g., Neon.tech or Supabase):
+1. In `prisma/schema.prisma`, update the datasource block:
+   ```prisma
+   datasource db {
+     provider = "postgresql"
+     url      = env("DATABASE_URL")
+   }
+   ```
+2. Run database migrations:
+   ```bash
+   npx prisma db push
+   ```
 
-### 2. Shopper CSV Importer
-- Pasting text or dragging-and-dropping a CSV parses headers and inserts records.
-- If a `total_spent` column is present, the importer auto-creates simulated purchases so segment filters (e.g. *Spent > 10,000*) immediately compute the new shopper's category.
+### Deploying Frontend on Vercel
+1. Link your GitHub repository to **Vercel**.
+2. Set **Build Command**: `npx prisma generate && npm run build`.
+3. Add Environment Variables:
+   - `DATABASE_URL`: *Your Cloud PostgreSQL connection string.*
+   - `NEXT_PUBLIC_CHANNEL_SERVICE_URL`: *The URL of your deployed Render backend.*
 
-### 3. Traditional & AI Segment Builder
-- **Criteria Selector**: Filter based on total spent (₹), order count, city, gender, or inactivity period.
-- **AI Planner**: Type *"Find shoppers who spent more than 5k and live in Mumbai"*. The AI parses the request, shows you the proposed structured rules, and saves the segment on approval.
-
-### 4. Live-Preview Campaign Builder
-- Select target audiences and communication channels (WhatsApp, Email, SMS).
-- Personalize templates using bracket placeholders like `{{firstName}}`, `{{city}}`, or `{{lastPurchase}}`.
-- View a **live preview container** rendering real-time replacements against a mock customer profile before dispatching.
-
-### 5. AI Copilot Chat Interface
-- Type questions like *"How can I increase repeat purchases?"* or *"Draft a discount for VIPs"*.
-- The Copilot replies conversationally and embeds an **interactive campaign installer card**. Clicking *"1-Click Launch"* immediately executes the recommended campaign.
-
-### 6. Level 5 Autonomous Campaign Agent (Differentiator)
-- Enter a broad marketing goal: *"Bring back inactive customers who haven't ordered in 30 days"*.
-- Launch the agent and watch a live status panel trace its autonomous plan:
-  1. **Research Audience**: Scans SQLite histories to find matching shopper profiles.
-  2. **Build Segment**: Automatically creates and registers the segment in the CRM.
-  3. **Personalize Copy**: Drafts promotional copy and selects the highest-performing channel.
-  4. **Queue Launch**: Deploys the campaign to the async queue.
-  5. **Fulfillment Webhook**: Listens for callback receipts to attribute conversions.
-
-### 7. Dual-Service Webhook Simulator
-- When a campaign launches, messages are pushed to the queue. The Next.js worker dispatches dispatches to the **Channel Service** (port 3001).
-- The Channel Service accepts the dispatches and asynchronously simulates user behavior.
-- It triggers a sequence of callback webhooks back to the CRM (`POST /api/callback`) with random delays: **Sent ➔ Delivered ➔ Opened ➔ Clicked** (or Failed).
-- The CRM ingests these callbacks, increments campaign metrics, and tracks attributed revenue (if a target customer makes a purchase after receiving the message).
-
----
-
-## 📐 System Design Decisions
-
-1. **SQLite Database Choice**: SQLite is fully self-contained in a single file (`prisma/dev.db`). This makes the take-home project incredibly easy for the reviewer to clone and run immediately, without having to spin up local docker containers or connect to external RDS servers. The schema and Prisma clients are fully compatible with PostgreSQL/Neon for production staging.
-2. **Sequential Webhook State Loop**: The separate channel service is not a simple "return status immediately" stub. It schedules sequential callbacks (Delivered after 2s, Opened after 4s, Clicked after 6s). When a campaign is launched, you can watch the campaign metrics charts and lists increment dynamically in real-time, showing how a real-world asynchronous webhook lifecycle works.
-3. **Dynamic Attribution**: Conversion revenue is calculated dynamically when campaigns are fetched. It attributes any delivered order placed by a customer *after* their campaign dispatch timestamp. This makes the database highly transactional and guarantees accurate data without double-entry side effects.
+### Deploying Backend on Render
+1. Create a new **Web Service** on **Render** linked to your repo.
+2. Set **Build Command**: `npm install`.
+3. Set **Start Command**: `node channel-service/server.js`.
+4. Add Environment Variable:
+   - `CRM_CALLBACK_URL`: *The callback URL of your Vercel frontend (e.g. `https://xeno-crm.vercel.app/api/callback`).*
