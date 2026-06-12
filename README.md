@@ -1,138 +1,432 @@
-# Xeno AI-Native Shopper CRM & Webhook Simulator
+# 🚀 Xeno AI-Native Shopper CRM & Webhook Simulator
 
-An engineering-grade, production-ready **AI-Native Mini CRM** designed for D2C/retail brands to reach shoppers intelligently. It features automated segment generation, conversational AI copywriting, an asynchronous webhook callback pipeline, and robust resilience simulation (automated retries and Dead Letter Queues).
+An AI-powered customer engagement platform built for modern D2C and retail brands. The system combines customer intelligence, AI-driven audience segmentation, campaign automation, asynchronous messaging pipelines, and revenue attribution into a unified CRM experience.
 
-This workspace has been converted to standard **ES6 JavaScript/JSX** with clean path mapping, a responsive top navigation bar, and advanced user session gateways.
+Unlike traditional CRMs that only store customer data, this platform actively helps marketers decide:
+
+* **Who to target**
+* **What to say**
+* **Which channel to use**
+* **How campaigns perform**
+* **How messaging failures are handled**
+
+The project demonstrates production-style architecture including AI workflows, webhook callbacks, retry mechanisms, dead-letter queues, attribution tracking, and autonomous marketing agents.
 
 ---
 
-## 📐 System Architecture & Webhook Loop
+# 🎯 Problem Statement
 
-The system operates as a decoupled dual-service architecture to simulate real-world asynchronous messaging flows:
+Marketing teams often struggle with:
 
+* Identifying the right audience
+* Creating personalized campaigns
+* Measuring campaign effectiveness
+* Handling messaging provider failures
+* Understanding customer engagement behavior
+
+This project solves those challenges through an AI-native CRM experience that combines customer analytics, campaign orchestration, and intelligent automation.
+
+---
+
+# ✨ Key Highlights
+
+### AI-Native Features
+
+* AI Segment Builder
+* AI Marketing Copilot
+* AI Tone & Copy Optimizer
+* Smart Channel Recommendation Engine
+* AI Campaign Performance Predictor
+* AI Audience Recommendation System
+* Autonomous Marketing Agent Workflow
+
+### CRM Features
+
+* Customer Management
+* Order Tracking
+* Customer 360° Profiles
+* Dynamic Customer Tags
+* Segment Management
+* Campaign Builder
+* Campaign Analytics
+* Revenue Attribution
+
+### Messaging Infrastructure
+
+* Asynchronous Channel Service
+* Webhook Callback Pipeline
+* Retry Engine
+* Dead Letter Queue (DLQ)
+* Failure Simulation
+* Delivery Auditing
+
+---
+
+# 🏗️ System Architecture
+
+```text
+┌─────────────────────────────────────┐
+│           Next.js CRM               │
+│        (Frontend + APIs)            │
+└──────────────────┬──────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────┐
+│           Prisma ORM                │
+│      SQLite / PostgreSQL            │
+└──────────────────┬──────────────────┘
+                   │
+ ┌─────────────────┼─────────────────┐
+ ▼                 ▼                 ▼
+
+AI Engine      Queue Engine      Auth Layer
+(OpenAI/Mock)  (BullMQ/InMemory) (Google/Cookies)
+
+                   │
+                   ▼
+
+┌─────────────────────────────────────┐
+│      Channel Service Simulator      │
+│          (Port 3001)                │
+└──────────────────┬──────────────────┘
+                   │
+                   ▼
+
+       POST /api/callback
+
+                   │
+                   ▼
+
+┌─────────────────────────────────────┐
+│     Analytics & Attribution Layer   │
+└─────────────────────────────────────┘
 ```
-                  ┌─────────────────┐
-                  │   Next.js 15    │
-                  │   CRM Frontend  │
-                  └────────┬────────┘
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │   Prisma ORM    │
-                  │ (SQLite / Pg)   │
-                  └────────┬────────┘
-                           │
-           ┌───────────────┼───────────────┐
-           ▼               ▼               ▼
-      OpenAI API     In-Memory Queue   Session Gate
-    (or NLP Mock)    (Async Retries)  (Google/Cookie)
-                           │
-                           ▼
-              Channel Service (Port 3001)
-            (Asynchronous simulation delay)
-                           │
-                           ▼
-                  POST /api/callback
-             (Attributes revenue & updates stats)
+
+---
+
+# 🤖 AI-Native Capabilities
+
+## AI Segment Builder
+
+Generate customer segments using natural language.
+
+Example:
+
+```text
+Find high-value inactive customers in Mumbai
+```
+
+The AI converts prompts into structured audience filters and estimates audience size and potential revenue.
+
+---
+
+## AI Marketing Copilot
+
+Interactive chat assistant capable of:
+
+* Customer analytics queries
+* Campaign performance insights
+* Revenue analysis
+* Segment recommendations
+
+---
+
+## AI Tone Optimization
+
+Campaign copy can be analyzed and improved automatically.
+
+The system provides:
+
+* Improved copy suggestions
+* Predicted CTR improvements
+* Reasoning behind recommendations
+
+---
+
+## Smart Channel Recommendation
+
+The platform evaluates audience characteristics and recommends the most effective communication channel.
+
+Examples:
+
+* Email
+* SMS
+* WhatsApp
+
+---
+
+## Autonomous Marketing Agent
+
+Demonstrates an AI workflow capable of:
+
+1. Analyzing customer data
+2. Building segments
+3. Generating campaign content
+4. Selecting channels
+5. Launching campaigns
+6. Monitoring results
+
+---
+
+# 👥 Customer Intelligence
+
+## Customer 360° View
+
+Each shopper profile includes:
+
+* Lifetime Value
+* Purchase History
+* RFM Analysis
+* Preferred Channel
+* Engagement Metrics
+* AI Recommendations
+
+---
+
+## Dynamic Lifecycle Tags
+
+Automatically generated customer classifications:
+
+* VIP
+* Active
+* At Risk
+* Sleepy
+* Lead
+
+---
+
+# 📣 Campaign Engine
+
+## Campaign Builder
+
+Features:
+
+* Message Templates
+* Personalization Placeholders
+* Live Preview
+* Segment Selection
+* Channel Selection
+
+---
+
+## A/B Testing Engine
+
+Supports:
+
+* 50/50 audience splitting
+* Variant-specific analytics
+* CTR comparison
+* Automatic winner selection
+
+---
+
+## Campaign Performance Prediction
+
+Before launch, the platform estimates:
+
+* Open Rate
+* CTR
+* Expected Revenue
+
+---
+
+# 🔄 Webhook Resilience & Reliability
+
+A dedicated Channel Service simulates real-world messaging providers.
+
+## Failure Simulation
+
+Supported failures:
+
+* EMAIL_BOUNCED
+* INVALID_NUMBER
+* RATE_LIMITED
+
+---
+
+## Retry Engine
+
+Failed deliveries automatically:
+
+1. Enter RETRYING state
+2. Wait 2 seconds
+3. Retry dispatch
+
+Maximum retries:
+
+```text
+3 Attempts
 ```
 
 ---
 
-## 🛠️ Tech Stack & Production Standards
+## Dead Letter Queue
 
-* **Frontend Framework**: Next.js 15 (App Router, JavaScript, Tailwind CSS, Recharts, Lucide Icons).
-* **Database & ORM**: Prisma ORM with support for SQLite (local zero-setup evaluation) and PostgreSQL (production).
-* **Authentication**: Dual-method authentication wrapper (`AuthGuard.jsx`):
-  * **Google Sign-In**: Powered by Google Identity Services, auto-registering new users and decoding JWTs securely.
-  * **Traditional Sign-In**: SHA-256 password hashing via Node's `crypto` module.
-  * **Sessions**: Managed via secure, HTTP-Only cookies (`xeno-session`).
-* **Background Processing**: Asynchronous in-memory queue processor with built-in retry backoff scheduler.
-* **Microservices**: Independent Express.js Channel Simulator (port 3001) hosting callback emitters.
+Messages that continue failing after three attempts are moved into a DLQ for auditing and investigation.
 
 ---
 
-## 🌟 Advanced Features 
-### 1. 🧪 A/B Testing Variant Engine
-- **50/50 Audience Split**: When crafting a campaign, check "Enable A/B Testing" to specify a control (Variant A) and optimized copy (Variant B).
-- **Variant Analytics**: Tracks distinct stats (Sent, Clicked, CTR) for each variant.
-- **Winner Attribution**: Automatically compares click-through rates upon campaign completion and crowns the winner (Variant A or B) in the database.
+# 📈 Analytics & Revenue Attribution
 
-### 2. 🔌 Webhook Resilience Simulator & Auto-Retry Loop
-- **Disruption Toggles**: Simulate message delivery delays, open rates, and click rates.
-- **Error Simulation**: If enabled, the channel service randomly throws provider-level errors: `EMAIL_BOUNCED`, `INVALID_NUMBER`, or `RATE_LIMITED`.
-- **CRM Retry Engine (3 Strikes)**: Bounced messages automatically transition to a `RETRYING` state. The CRM schedules a deferred retry dispatch after a 2-second delay.
-- **Dead Letter Queue (DLQ)**: If a message fails 3 times, it is permanently quarantined in the DLQ with status `DLQ` and retry logs are committed for audits.
+The platform tracks:
 
-### 3. 🧠 Smart Channel Recommendation Advisor
-- **Profile Diagnostics**: Analyzes the demographics and spend histories of the selected audience segment.
-- **1-Click Apply**: Recommends the highest-performing channel (Email, SMS, or WhatsApp) based on LTV values or churn risks (e.g. *"VIP shoppers convert 23% better on detailed email layouts"*).
+* Sent Messages
+* Delivered Messages
+* Opens
+* Clicks
+* Conversions
+* Revenue Generated
 
-### 4. 🎛️ Dynamic Ledger Sliders & Scroll Bounds
-- **Interactive Range Sliders**: Adjust the displaying row count dynamically (5 to 50 rows) next to search filters in the Customers and Orders ledger tables.
-- **Bounded Viewports**: Tables scroll inside bounded vertical boxes (`max-h-[500px] overflow-y-auto`) to stay visually aligned with diagnostic side panels.
-
-### 5. 📄 Corporate PDF Report Exporter
-- Completed campaigns render an **"Export Report"** button.
-- Uses dedicated CSS print styles (`print:hidden` and `hidden print:block`) to output a professional double-column Performance & Delivery Audit document.
+Purchases made after campaign interactions are automatically attributed back to the originating campaign.
 
 ---
 
-## 🚀 Getting Started locally
+# 📄 Report Export
 
-### 1. Install Dependencies
+Completed campaigns can generate professional audit reports including:
+
+* KPI Summaries
+* Delivery Metrics
+* Conversion Analytics
+* A/B Test Results
+* Failure Logs
+* AI Campaign Insights
+
+---
+
+# 🔐 Authentication
+
+Supported authentication methods:
+
+### Google Sign-In
+
+* Auto registration
+* JWT validation
+* Session creation
+
+### Email & Password
+
+* SHA-256 password hashing
+* Secure session cookies
+
+---
+
+# 🛠️ Technology Stack
+
+Frontend:
+
+* Next.js 15
+* React
+* Tailwind CSS
+* Recharts
+* Lucide Icons
+
+Backend:
+
+* Next.js Route Handlers
+* Express.js
+
+Database:
+
+* Prisma ORM
+* SQLite
+* PostgreSQL
+
+AI:
+
+* OpenAI GPT-4o
+* Rule-Based Fallback Engine
+
+Infrastructure:
+
+* BullMQ (Optional)
+* In-Memory Queue
+* Webhook Simulator
+
+---
+
+# 🚀 Local Setup
+
+Install dependencies:
+
 ```bash
 npm install
 ```
 
-### 2. Set Up the Local Database
-Generate the Prisma client and push the schema to SQLite:
+Generate Prisma client:
+
 ```bash
 npx prisma generate
+```
+
+Push schema:
+
+```bash
 npx prisma db push
 ```
 
-### 3. Seed Database Mock Data
-Populate the SQLite ledger with 50+ mock customer records, 140+ transaction logs (spanning the last 90 days), and default segment rules:
+Seed mock data:
+
 ```bash
 npm run prisma:seed
 ```
 
-### 4. Run Development Servers
-Start the Next.js CRM (port 3000) and the Channel Service (port 3001) concurrently:
+Start both services:
+
 ```bash
 npm run dev
 ```
 
-Visit **[http://localhost:3000](http://localhost:3000)** in your browser!
+Application:
+http://localhost:3000
+
+Channel Service:
+http://localhost:3001
 
 ---
 
-## 📦 Production Deployment Steps
+# 🌐 Production Deployment
 
-### Database Migration (SQLite to PostgreSQL)
-SQLite database files are read-only and ephemeral on serverless hosting like Vercel. For production, switch your database connection to a cloud database provider (e.g., Neon.tech or Supabase):
-1. In `prisma/schema.prisma`, update the datasource block:
-   ```prisma
-   datasource db {
-     provider = "postgresql"
-     url      = env("DATABASE_URL")
-   }
-   ```
-2. Run database migrations:
-   ```bash
-   npx prisma db push
-   ```
+Frontend:
 
-### Deploying Frontend on Vercel
-1. Link your GitHub repository to **Vercel**.
-2. Set **Build Command**: `npx prisma generate && npm run build`.
-3. Add Environment Variables:
-   - `DATABASE_URL`: *Your Cloud PostgreSQL connection string.*
-   - `NEXT_PUBLIC_CHANNEL_SERVICE_URL`: *The URL of your deployed Render backend.*
+* Vercel
 
-### Deploying Backend on Render
-1. Create a new **Web Service** on **Render** linked to your repo.
-2. Set **Build Command**: `npm install`.
-3. Set **Start Command**: `node channel-service/server.js`.
-4. Add Environment Variable:
-   - `CRM_CALLBACK_URL`: *The callback URL of your Vercel frontend (e.g. `https://xeno-crm.vercel.app/api/callback`).*
+Database:
+
+* Neon PostgreSQL
+* Supabase PostgreSQL
+
+Backend Service:
+
+* Render
+* Railway
+
+Environment Variables:
+
+```env
+DATABASE_URL=
+OPENAI_API_KEY=
+NEXT_PUBLIC_CHANNEL_SERVICE_URL=
+GOOGLE_CLIENT_ID=
+```
+
+---
+
+# 📊 Future Scalability
+
+Current Evaluation Setup:
+
+* SQLite
+* In-Memory Queue
+* Mock AI Fallback
+
+Production Evolution:
+
+* PostgreSQL
+* Redis
+* BullMQ
+* Kafka
+* Dedicated Messaging Providers
+* Distributed Worker Pools
+
+This architecture allows the platform to scale from local evaluation environments to millions of customer interactions while maintaining reliability and observability.
