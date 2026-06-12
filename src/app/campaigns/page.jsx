@@ -557,7 +557,7 @@ export default function CampaignsPage() {
                           onClick={() => setChannel(ch.val)}
                           className={`py-2 rounded border flex flex-col items-center justify-center gap-1 cursor-pointer transition-all ${
                             channel === ch.val
-                              ? "bg-indigo-650 border-indigo-500 text-white font-bold"
+                              ? "bg-indigo-600 border-indigo-500 text-white font-bold"
                               : "bg-slate-100 dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white"
                           }`}
                         >
@@ -743,7 +743,7 @@ export default function CampaignsPage() {
 
                 <button
                   type="submit"
-                  className="w-full py-2 bg-indigo-650 hover:bg-indigo-500 text-white rounded font-bold cursor-pointer transition-all"
+                  className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold cursor-pointer transition-all"
                 >
                   Create Campaign Draft
                 </button>
@@ -782,7 +782,7 @@ export default function CampaignsPage() {
                   <button
                     onClick={handleAIDraftCampaign}
                     disabled={draftingAi || !aiPrompt}
-                    className="w-full py-2 bg-indigo-650 hover:bg-indigo-500 disabled:opacity-50 text-white rounded font-bold text-xs transition-all cursor-pointer"
+                    className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded font-bold text-xs transition-all cursor-pointer"
                   >
                     {draftingAi
                       ? "Drafting Campaign Proposal..."

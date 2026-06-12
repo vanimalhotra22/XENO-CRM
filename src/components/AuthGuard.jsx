@@ -43,9 +43,59 @@ export default function AuthGuard({ children }) {
     }
   };
 
+  const handleGoogleLoginResponse = async (response) => {
+    setError("");
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credential: response.credential }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setUser(data.user);
+      } else {
+        setError(data.error || "Google Authentication failed.");
+      }
+    } catch (err) {
+      setError("Connection failed during Google authentication.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     checkSession();
   }, []);
+
+  useEffect(() => {
+    const isPublic = pathname === "/";
+    if (user || checking || isPublic) return;
+
+    // Load Google GSI client library dynamically
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: "1061585203397-dncsbtgk840g9vvv5j2t7qah2mpm5nu9.apps.googleusercontent.com",
+          callback: handleGoogleLoginResponse
+        });
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-signin-button"),
+          { theme: "outline", size: "large", width: 385, text: "signin_with" }
+        );
+      }
+    };
+    document.body.appendChild(script);
+    
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, [user, checking, isRegister, pathname]);
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
@@ -167,7 +217,7 @@ export default function AuthGuard({ children }) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="E.g., Vani Malhotra"
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-10 pr-3 py-2.5 text-white focus:outline-none focus:border-indigo-500 text-xs transition-colors"
+                  className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg pl-10 pr-3 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 text-xs transition-colors"
                 />
               </div>
             </div>
@@ -185,7 +235,7 @@ export default function AuthGuard({ children }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="E.g., marketer@xeno.in"
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-10 pr-3 py-2.5 text-white focus:outline-none focus:border-indigo-500 text-xs transition-colors"
+                className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg pl-10 pr-3 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 text-xs transition-colors"
               />
             </div>
           </div>
@@ -202,7 +252,7 @@ export default function AuthGuard({ children }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password..."
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-10 pr-3 py-2.5 text-white focus:outline-none focus:border-indigo-500 text-xs transition-colors"
+                className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg pl-10 pr-3 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 text-xs transition-colors"
               />
             </div>
           </div>
@@ -222,7 +272,17 @@ export default function AuthGuard({ children }) {
           </button>
         </form>
 
-        <div className="text-center border-t border-zinc-800/10 pt-4">
+        <div className="relative flex py-1 items-center">
+          <div className="flex-grow border-t border-slate-200/60 dark:border-zinc-800/20"></div>
+          <span className="flex-shrink mx-3 text-[9px] text-slate-400 dark:text-zinc-500 font-extrabold uppercase tracking-widest">or</span>
+          <div className="flex-grow border-t border-slate-200/60 dark:border-zinc-800/20"></div>
+        </div>
+
+        <div className="flex justify-center w-full">
+          <div id="google-signin-button" className="w-full flex justify-center"></div>
+        </div>
+
+        <div className="text-center border-t border-slate-200/60 dark:border-zinc-800/20 pt-4">
           <button
             onClick={() => {
               setIsRegister(!isRegister);

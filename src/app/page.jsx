@@ -89,7 +89,7 @@ export default function LandingPage() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
           <Link
             href="/dashboard"
-            className="w-full sm:w-auto px-8 py-3.5 bg-indigo-650 hover:bg-indigo-500 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-650/20 hover:scale-102 transition-all cursor-pointer"
+            className="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 hover:scale-102 transition-all cursor-pointer"
           >
             Launch CRM Workspace <ArrowRight className="w-4 h-4" />
           </Link>
