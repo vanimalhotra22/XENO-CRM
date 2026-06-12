@@ -1,4 +1,4 @@
-# 🚀 Xeno AI-Native Shopper CRM & Webhook Simulator
+#  Xeno AI-Native Shopper CRM & Webhook Simulator
 
 An AI-powered customer engagement platform built for modern D2C and retail brands. The system combines customer intelligence, AI-driven audience segmentation, campaign automation, asynchronous messaging pipelines, and revenue attribution into a unified CRM experience.
 
