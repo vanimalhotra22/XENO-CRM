@@ -51,8 +51,7 @@ The system operates as a decoupled dual-service architecture to simulate real-wo
 
 ---
 
-## 🌟 Advanced Features (Interviewer "Wow" Factors)
-
+## 🌟 Advanced Features 
 ### 1. 🧪 A/B Testing Variant Engine
 - **50/50 Audience Split**: When crafting a campaign, check "Enable A/B Testing" to specify a control (Variant A) and optimized copy (Variant B).
 - **Variant Analytics**: Tracks distinct stats (Sent, Clicked, CTR) for each variant.
