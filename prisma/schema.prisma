@@ -1,10 +1,10 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "sqlite"
   url      = "file:./dev.db"
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model User {
@@ -24,25 +24,25 @@ model Customer {
   city           String?
   gender         String?
   createdAt      DateTime        @default(now())
-  orders         Order[]
   communications Communication[]
+  orders         Order[]
 }
 
 model Order {
   id         String   @id @default(uuid())
   customerId String
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   amount     Float
-  items      String // JSON string representing array of items
-  status     String // PENDING, DELIVERED, CANCELLED
+  items      String
+  status     String
   createdAt  DateTime @default(now())
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 }
 
 model Segment {
   id            String     @id @default(uuid())
   name          String
   description   String?
-  query         String // JSON representation of filter rules
+  query         String
   customerCount Int        @default(0)
   createdAt     DateTime   @default(now())
   campaigns     Campaign[]
@@ -52,10 +52,9 @@ model Campaign {
   id               String          @id @default(uuid())
   name             String
   segmentId        String
-  segment          Segment         @relation(fields: [segmentId], references: [id], onDelete: Cascade)
-  channel          String // EMAIL, SMS, WHATSAPP
-  message          String // Message with placeholders: {{name}}, {{firstName}}, {{lastPurchase}}
-  status           String          @default("DRAFT") // DRAFT, SENDING, SENT, FAILED
+  channel          String
+  message          String
+  status           String          @default("DRAFT")
   sentCount        Int             @default(0)
   deliveredCount   Int             @default(0)
   openedCount      Int             @default(0)
@@ -64,32 +63,31 @@ model Campaign {
   revenueGenerated Float           @default(0.0)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
-  communications   Communication[]
-
-  // AI-Powered & Submission features
   isAbTest         Boolean         @default(false)
-  messageB         String?         // Version B Message
+  messageB         String?
   sentCountB       Int             @default(0)
   openedCountB     Int             @default(0)
   clickedCountB    Int             @default(0)
-  winner           String?         // "A" or "B"
-  aiSummary        String?         // AI Generated Post-Campaign Summary
-  channelRecommend String?         // Reason for recommending this channel
+  winner           String?
+  aiSummary        String?
+  channelRecommend String?
+  segment          Segment         @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+  communications   Communication[]
 }
 
 model Communication {
   id            String   @id @default(uuid())
   campaignId    String
-  campaign      Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   customerId    String
-  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  status        String   @default("PENDING") // PENDING, SENT, DELIVERED, OPENED, CLICKED, FAILED, RETRYING, DLQ
+  status        String   @default("PENDING")
   timestamp     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  variant       String   @default("A")       // "A" or "B" for A/B Testing
+  variant       String   @default("A")
   retryCount    Int      @default(0)
   failureReason String?
-  retryLogs     String?                      // JSON string representing logs: [{"time": "12:00", "event": "...", "status": "..."}]
+  retryLogs     String?
+  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  campaign      Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 
   @@index([campaignId])
   @@index([customerId])
@@ -98,9 +96,8 @@ model Communication {
 model AgentRun {
   id        String   @id @default(uuid())
   goal      String
-  status    String   @default("RUNNING") // RUNNING, COMPLETED, FAILED
-  steps     String // JSON array of steps: [{time: string, message: string, status: string}]
+  status    String   @default("RUNNING")
+  steps     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-

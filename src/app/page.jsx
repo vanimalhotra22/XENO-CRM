@@ -308,7 +308,7 @@ export default function LandingPage() {
                     onClick={() => setSelectedTone(tone.id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                       selectedTone === tone.id
-                        ? "bg-indigo-650 text-white"
+                        ? "bg-indigo-600 text-white"
                         : "bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300"
                     }`}
                   >
@@ -320,7 +320,7 @@ export default function LandingPage() {
               <button
                 type="submit"
                 disabled={loadingSuggestion || !originalText.trim()}
-                className="w-full sm:w-auto px-6 py-2.5 bg-indigo-650 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-indigo-650/10 cursor-pointer"
+                className="w-full sm:w-auto px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-indigo-600/10 cursor-pointer"
               >
                 {loadingSuggestion ? (
                   <>
@@ -365,7 +365,7 @@ export default function LandingPage() {
         </p>
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 px-8 py-3.5 bg-indigo-650 hover:bg-indigo-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-650/20 hover:scale-102 transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-600/20 hover:scale-102 transition-all cursor-pointer"
         >
           Launch Xeno App <ArrowRight className="w-4 h-4 animate-pulse" />
         </Link>
