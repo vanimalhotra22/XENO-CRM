@@ -75,6 +75,18 @@ export async function POST(request) {
       );
     }
 
+    // Check if customer with the same email already exists
+    const existingCustomer = await prisma.customer.findUnique({
+      where: { email },
+    });
+
+    if (existingCustomer) {
+      return NextResponse.json(
+        { error: "A shopper with this email address already exists." },
+        { status: 400 },
+      );
+    }
+
     const customer = await prisma.customer.create({
       data: { name, email, phone, city, gender },
     });
@@ -85,6 +97,15 @@ export async function POST(request) {
     return NextResponse.json({ success: true, customer });
   } catch (error) {
     console.error("Error creating customer:", error);
+    if (
+      error.code === "P2002" ||
+      (error.message && error.message.includes("Unique constraint failed"))
+    ) {
+      return NextResponse.json(
+        { error: "A shopper with this email address already exists." },
+        { status: 400 },
+      );
+    }
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
