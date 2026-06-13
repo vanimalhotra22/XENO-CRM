@@ -27,6 +27,8 @@ model Customer {
   createdAt      DateTime        @default(now())
   communications Communication[]
   orders         Order[]
+
+  @@index([createdAt])
 }
 
 model Order {
@@ -37,6 +39,9 @@ model Order {
   status     String
   createdAt  DateTime @default(now())
   customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([createdAt])
 }
 
 model Segment {

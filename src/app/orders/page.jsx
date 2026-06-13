@@ -40,7 +40,7 @@ export default function OrdersPage() {
     try {
       const [ordRes, custRes] = await Promise.all([
         fetch("/api/orders"),
-        fetch("/api/customers"),
+        fetch("/api/customers?limit=100"),
       ]);
       const ordData = await ordRes.json();
       const custData = await custRes.json();

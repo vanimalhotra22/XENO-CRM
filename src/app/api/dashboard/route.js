@@ -27,8 +27,8 @@ export async function GET() {
         },
       }),
       prisma.campaign.count(),
-      prisma.campaign.findMany({
-        select: {
+      prisma.campaign.aggregate({
+        _sum: {
           sentCount: true,
           deliveredCount: true,
           openedCount: true,
@@ -40,6 +40,10 @@ export async function GET() {
         where: {
           status: "DELIVERED",
           createdAt: { gte: cutoffDate },
+        },
+        select: {
+          createdAt: true,
+          amount: true,
         },
         orderBy: { createdAt: "asc" },
       }),
@@ -64,6 +68,9 @@ export async function GET() {
         where: {
           createdAt: { gte: cutoffDateForGrowth },
         },
+        select: {
+          createdAt: true,
+        },
         orderBy: { createdAt: "asc" },
       })
     ]);
@@ -71,23 +78,11 @@ export async function GET() {
     const totalOrders = orderStats._count || 0;
     const totalRevenue = orderStats._sum.amount || 0;
 
-    const totalSent = campaignsStats.reduce((sum, c) => sum + c.sentCount, 0);
-    const totalDelivered = campaignsStats.reduce(
-      (sum, c) => sum + c.deliveredCount,
-      0,
-    );
-    const totalOpened = campaignsStats.reduce(
-      (sum, c) => sum + c.openedCount,
-      0,
-    );
-    const totalClicked = campaignsStats.reduce(
-      (sum, c) => sum + c.clickedCount,
-      0,
-    );
-    const totalCampaignRevenue = campaignsStats.reduce(
-      (sum, c) => sum + c.revenueGenerated,
-      0,
-    );
+    const sums = campaignsStats._sum || {};
+    const totalSent = sums.sentCount || 0;
+    const totalOpened = sums.openedCount || 0;
+    const totalClicked = sums.clickedCount || 0;
+    const totalCampaignRevenue = sums.revenueGenerated || 0;
 
     const openRate = totalSent > 0 ? (totalOpened / totalSent) * 100 : 0;
     const clickRate = totalSent > 0 ? (totalClicked / totalSent) * 100 : 0;

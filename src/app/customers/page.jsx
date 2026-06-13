@@ -43,10 +43,10 @@ export default function CustomersPage() {
   });
   const [formError, setFormError] = useState("");
 
-  const fetchCustomers = async (query = "") => {
+  const fetchCustomers = async (query = "", reqLimit = limit) => {
     try {
       const res = await fetch(
-        `/api/customers?search=${encodeURIComponent(query)}`,
+        `/api/customers?search=${encodeURIComponent(query)}&limit=${reqLimit}&includeOrders=true`,
       );
       const data = await res.json();
       if (data.success) {
@@ -70,8 +70,8 @@ export default function CustomersPage() {
   }, [search]);
 
   useEffect(() => {
-    fetchCustomers(debouncedSearch);
-  }, [debouncedSearch]);
+    fetchCustomers(debouncedSearch, limit);
+  }, [debouncedSearch, limit]);
 
   // CSV Drag and Drop Handlers
   const handleDrag = (e) => {

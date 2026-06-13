@@ -6,29 +6,35 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search") || "";
+    const limit = parseInt(searchParams.get("limit") || "50");
+    const includeOrders = searchParams.get("includeOrders") === "true";
 
     // Fetch customers
     const customers = await prisma.customer.findMany({
       where: search
         ? {
             OR: [
-              { name: { contains: search } },
-              { email: { contains: search } },
-              { city: { contains: search } },
+              { name: { contains: search, mode: "insensitive" } },
+              { email: { contains: search, mode: "insensitive" } },
+              { city: { contains: search, mode: "insensitive" } },
             ],
           }
         : undefined,
-      include: {
-        orders: true,
-      },
+      include: includeOrders
+        ? {
+            orders: true,
+          }
+        : undefined,
       orderBy: {
         createdAt: "desc",
       },
+      take: limit,
     });
 
     // Format profiles
     const profiles = customers.map((c) => {
-      const deliveredOrders = c.orders.filter((o) => o.status === "DELIVERED");
+      const orders = c.orders || [];
+      const deliveredOrders = orders.filter((o) => o.status === "DELIVERED");
       const totalSpent = deliveredOrders.reduce((sum, o) => sum + o.amount, 0);
       const orderCount = deliveredOrders.length;
       let lastOrderDaysAgo = 9999;
