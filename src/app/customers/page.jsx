@@ -20,6 +20,7 @@ export default function CustomersPage() {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [limit, setLimit] = useState(10);
   // Slide-over Customer 360 state
   const [selectedCust, setSelectedCust] = useState(null);
@@ -62,8 +63,15 @@ export default function CustomersPage() {
   };
 
   useEffect(() => {
-    fetchCustomers(search);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(handler);
   }, [search]);
+
+  useEffect(() => {
+    fetchCustomers(debouncedSearch);
+  }, [debouncedSearch]);
 
   // CSV Drag and Drop Handlers
   const handleDrag = (e) => {
