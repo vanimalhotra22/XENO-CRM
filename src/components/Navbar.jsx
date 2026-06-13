@@ -28,11 +28,11 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const [channelStatus, setChannelStatus] = useState('checking');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const channelServiceUrl = process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL || 'http://localhost:3001';
 
   // Check Channel Service Health periodically
   const checkChannelHealth = async () => {
     try {
-      const channelServiceUrl = process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL || 'http://localhost:3001';
       const res = await fetch(`${channelServiceUrl}/health`, {
         mode: 'cors',
         signal: AbortSignal.timeout(2000)
@@ -138,7 +138,13 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             {/* Health / System Status */}
             {user && (
-              <div className="hidden sm:flex items-center gap-2 bg-slate-100/60 dark:bg-zinc-900/40 border border-slate-200/50 dark:border-zinc-800/50 rounded-lg px-2.5 py-1 text-[10.5px]">
+              <a
+                href={channelServiceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden sm:flex items-center gap-2 bg-slate-100/60 dark:bg-zinc-900/40 border border-slate-200/50 dark:border-zinc-800/50 rounded-lg px-2.5 py-1 text-[10.5px] hover:bg-slate-200/60 dark:hover:bg-zinc-800/60 transition-colors cursor-pointer"
+                title="Open Channel Simulator Dashboard"
+              >
                 <span className="text-slate-500 dark:text-zinc-500 font-medium">Channel Simulator:</span>
                 <span className={`w-1.5 h-1.5 rounded-full ${
                   channelStatus === 'online' ? 'bg-emerald-500 animate-pulse' :
@@ -150,7 +156,7 @@ export default function Navbar() {
                 }`}>
                   {channelStatus === 'checking' ? '...' : channelStatus}
                 </span>
-              </div>
+              </a>
             )}
 
             {/* Theme Toggle */}
@@ -229,8 +235,14 @@ export default function Navbar() {
           })}
           
           {/* Mobile Status Bar */}
-          <div className="border-t border-slate-200/60 dark:border-zinc-850 pt-3 mt-2 flex items-center justify-between px-4 text-xs">
-            <span className="text-slate-500">Channel Status</span>
+          <a
+            href={channelServiceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="border-t border-slate-200/60 dark:border-zinc-850 pt-3 mt-2 flex items-center justify-between px-4 text-xs cursor-pointer hover:bg-slate-50/50 dark:hover:bg-zinc-850/50 rounded transition-colors"
+            title="Open Channel Simulator Dashboard"
+          >
+            <span className="text-slate-500 font-semibold">Channel Status</span>
             <div className="flex items-center gap-1.5">
               <span className={`w-1.5 h-1.5 rounded-full ${
                 channelStatus === 'online' ? 'bg-emerald-500 animate-pulse' :
@@ -243,7 +255,7 @@ export default function Navbar() {
                 {channelStatus}
               </span>
             </div>
-          </div>
+          </a>
         </div>
       )}
     </header>
