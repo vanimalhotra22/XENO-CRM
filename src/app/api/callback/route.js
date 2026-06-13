@@ -5,7 +5,10 @@ import { generateAISummary } from "@/lib/ai";
 import { personalizeMessage } from "@/lib/personalization";
 
 const CHANNEL_SERVICE_URL =
-  process.env.CHANNEL_SERVICE_URL || "http://localhost:3001/send";
+  process.env.CHANNEL_SERVICE_URL ||
+  (process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL
+    ? `${process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL}/send`
+    : "http://localhost:3001/send");
 
 export async function POST(request) {
   try {

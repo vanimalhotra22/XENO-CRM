@@ -3,7 +3,10 @@ import { getCustomersInSegment } from "./segments";
 import { personalizeMessage } from "./personalization";
 
 const CHANNEL_SERVICE_URL =
-  process.env.CHANNEL_SERVICE_URL || "http://localhost:3001/send";
+  process.env.CHANNEL_SERVICE_URL ||
+  (process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL
+    ? `${process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL}/send`
+    : "http://localhost:3001/send");
 
 export async function launchCampaign(campaignId) {
   try {
