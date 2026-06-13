@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import cache from "@/lib/cache";
 import {
   ShoppingBag,
   User,
@@ -22,9 +23,9 @@ const PRODUCT_PRESETS = [
 ];
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState([]);
-  const [customers, setCustomers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState(cache.orders?.orders || []);
+  const [customers, setCustomers] = useState(cache.orders?.customers || []);
+  const [loading, setLoading] = useState(!cache.orders);
   const [limit, setLimit] = useState(10);
 
   // Simulator Form States
@@ -45,12 +46,23 @@ export default function OrdersPage() {
       const ordData = await ordRes.json();
       const custData = await custRes.json();
 
+      let nextOrders = orders;
+      let nextCustomers = customers;
+
       if (ordData.success) {
         setOrders(ordData.orders);
+        nextOrders = ordData.orders;
       }
       if (custData.success && custData.customers.length > 0) {
         setCustomers(custData.customers);
-        setSelectedCustomerId(custData.customers[0].id);
+        nextCustomers = custData.customers;
+        if (!selectedCustomerId) {
+          setSelectedCustomerId(custData.customers[0].id);
+        }
+      }
+
+      if (ordData.success || custData.success) {
+        cache.orders = { orders: nextOrders, customers: nextCustomers };
       }
     } catch (e) {
       console.error("Error fetching orders:", e);

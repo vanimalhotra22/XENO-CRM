@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import cache from "@/lib/cache";
 import { BarChart3, Sparkles, RefreshCw } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -17,15 +18,17 @@ import {
 } from "recharts";
 
 export default function AnalyticsPage() {
-  const [campaigns, setCampaigns] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [campaigns, setCampaigns] = useState(cache.analytics || []);
+  const [loading, setLoading] = useState(cache.analytics === null);
 
   const fetchCampaigns = async () => {
     try {
       const res = await fetch("/api/campaigns");
       const data = await res.json();
       if (data.success) {
-        setCampaigns(data.campaigns.filter((c) => c.status !== "DRAFT"));
+        const activeCampaigns = data.campaigns.filter((c) => c.status !== "DRAFT");
+        setCampaigns(activeCampaigns);
+        cache.analytics = activeCampaigns;
       }
     } catch (e) {
       console.error("Error fetching analytics campaigns:", e);

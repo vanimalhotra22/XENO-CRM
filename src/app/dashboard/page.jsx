@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthGuard";
+import cache from "@/lib/cache";
 import {
   Users,
   IndianRupee,
@@ -29,10 +30,10 @@ import {
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
-  const [kpis, setKpis] = useState(null);
-  const [charts, setCharts] = useState(null);
-  const [topCustomers, setTopCustomers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [kpis, setKpis] = useState(cache.dashboard?.kpis || null);
+  const [charts, setCharts] = useState(cache.dashboard?.charts || null);
+  const [topCustomers, setTopCustomers] = useState(cache.dashboard?.topCustomers || []);
+  const [loading, setLoading] = useState(!cache.dashboard);
   const [refreshing, setRefreshing] = useState(false);
   // AI Recommendations
   const [recommendations, setRecommendations] = useState([]);
@@ -48,12 +49,27 @@ export default function Dashboard() {
       const statsData = await statsRes.json();
       const ordersData = await ordersRes.json();
 
+      let nextKpis = kpis;
+      let nextCharts = charts;
+      let nextTopCustomers = topCustomers;
+
       if (statsData.success) {
         setKpis(statsData.kpis);
         setCharts(statsData.charts);
+        nextKpis = statsData.kpis;
+        nextCharts = statsData.charts;
       }
       if (ordersData.success) {
         setTopCustomers(ordersData.topCustomers);
+        nextTopCustomers = ordersData.topCustomers;
+      }
+
+      if (statsData.success || ordersData.success) {
+        cache.dashboard = {
+          kpis: nextKpis,
+          charts: nextCharts,
+          topCustomers: nextTopCustomers,
+        };
       }
 
       // Generate AI Recommendations based on DB stats

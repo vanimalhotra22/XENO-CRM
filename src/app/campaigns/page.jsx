@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
+import cache from "@/lib/cache";
 import {
   Send,
   Sparkles,
@@ -37,14 +38,14 @@ const CAMPAIGN_PRESETS = [
 
 export default function CampaignsPage() {
   const channelServiceUrl = process.env.NEXT_PUBLIC_CHANNEL_SERVICE_URL || 'http://localhost:3001';
-  const [campaigns, setCampaigns] = useState([]);
+  const [campaigns, setCampaigns] = useState(cache.campaigns?.campaigns || []);
   const campaignsRef = useRef([]);
   useEffect(() => {
     campaignsRef.current = campaigns;
   }, [campaigns]);
 
-  const [segments, setSegments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [segments, setSegments] = useState(cache.campaigns?.segments || []);
+  const [loading, setLoading] = useState(!cache.campaigns);
 
   // Form states
   const [name, setName] = useState("");
@@ -206,11 +207,22 @@ export default function CampaignsPage() {
       const campData = await campRes.json();
       const segData = await segRes.json();
 
-      if (campData.success) setCampaigns(campData.campaigns);
+      let nextCampaigns = campaigns;
+      let nextSegments = segments;
+
+      if (campData.success) {
+        setCampaigns(campData.campaigns);
+        nextCampaigns = campData.campaigns;
+      }
       if (segData.success) {
         setSegments(segData.segments);
+        nextSegments = segData.segments;
         if (segData.segments.length > 0 && !segmentId)
           setSegmentId(segData.segments[0].id);
+      }
+
+      if (campData.success || segData.success) {
+        cache.campaigns = { campaigns: nextCampaigns, segments: nextSegments };
       }
     } catch (e) {
       console.error("Error fetching campaign data:", e);

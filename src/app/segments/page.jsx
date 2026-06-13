@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import cache from "@/lib/cache";
 import {
   Filter,
   Sparkles,
@@ -11,8 +12,8 @@ import {
 } from "lucide-react";
 
 export default function SegmentsPage() {
-  const [segments, setSegments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [segments, setSegments] = useState(cache.segments || []);
+  const [loading, setLoading] = useState(cache.segments === null);
   // Custom segment builder state
   const [segmentName, setSegmentName] = useState("");
   const [segmentDesc, setSegmentDesc] = useState("");
@@ -110,6 +111,7 @@ export default function SegmentsPage() {
       const data = await res.json();
       if (data.success) {
         setSegments(data.segments);
+        cache.segments = data.segments;
       }
     } catch (e) {
       console.error("Error fetching segments:", e);

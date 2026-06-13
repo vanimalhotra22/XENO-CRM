@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
+import cache from "@/lib/cache";
 import {
   Users,
   Search,
@@ -17,8 +18,8 @@ import {
 } from "lucide-react";
 
 export default function CustomersPage() {
-  const [customers, setCustomers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [customers, setCustomers] = useState(cache.customers || []);
+  const [loading, setLoading] = useState(cache.customers === null);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [limit, setLimit] = useState(10);
@@ -51,6 +52,7 @@ export default function CustomersPage() {
       const data = await res.json();
       if (data.success) {
         setCustomers(data.customers);
+        cache.customers = data.customers;
         if (data.customers.length > 0 && !selectedCust) {
           setSelectedCust(data.customers[0]);
         }
