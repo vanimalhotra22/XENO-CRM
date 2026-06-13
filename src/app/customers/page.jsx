@@ -675,117 +675,121 @@ export default function CustomersPage() {
             )}
           </div>
 
-          {/* Quick Manual Entry Form Overlay */}
+          {/* Quick Manual Entry Form Modal Overlay */}
           {showAddForm && (
-            <div className="glass-panel p-6 rounded-xl space-y-4 relative">
-              <button
-                onClick={() => setShowAddForm(false)}
-                className="absolute top-4 right-4 text-slate-400 dark:text-zinc-500 hover:text-slate-600"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <UserPlus className="w-5 h-5 text-indigo-500" /> Manual Entry
-                </h2>
-                <p className="text-slate-500 dark:text-zinc-500 text-xs">
-                  Add a new shopper profile manually to the database.
-                </p>
-              </div>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4 transition-all duration-200">
+              <div className="w-full max-w-md bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 rounded-2xl p-6 relative shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+                <button
+                  onClick={() => setShowAddForm(false)}
+                  className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-350 hover:bg-slate-100 dark:hover:bg-zinc-900/60 transition-colors cursor-pointer"
+                  aria-label="Close modal"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+                
+                <div className="space-y-1">
+                  <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                    <UserPlus className="w-5 h-5 text-indigo-500" /> Add New Shopper
+                  </h2>
+                  <p className="text-slate-500 dark:text-zinc-450 text-xs">
+                    Create a new shopper profile manually in your CRM database.
+                  </p>
+                </div>
 
-              {formError && (
-                <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4" /> {formError}
-                </div>
-              )}
+                {formError && (
+                  <div className="p-3.5 bg-rose-500/10 border border-rose-500/15 rounded-xl text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2 font-medium">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" /> {formError}
+                  </div>
+                )}
 
-              <form
-                onSubmit={handleAddCustomerSubmit}
-                className="space-y-3 text-xs"
-              >
-                <div className="space-y-1">
-                  <label className="text-slate-700 dark:text-zinc-400 font-semibold">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newCust.name}
-                    onChange={(e) =>
-                      setNewCust({ ...newCust, name: e.target.value })
-                    }
-                    className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
-                    placeholder="E.g., Vani Malhotra"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-slate-700 dark:text-zinc-400 font-semibold">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={newCust.email}
-                    onChange={(e) =>
-                      setNewCust({ ...newCust, email: e.target.value })
-                    }
-                    className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
-                    placeholder="E.g., vani@gmail.com"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-slate-700 dark:text-zinc-400 font-semibold">
-                    Phone
-                  </label>
-                  <input
-                    type="text"
-                    value={newCust.phone}
-                    onChange={(e) =>
-                      setNewCust({ ...newCust, phone: e.target.value })
-                    }
-                    className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
-                    placeholder="E.g., 9876543210"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-slate-700 dark:text-zinc-400 font-semibold">
-                      City
+                <form
+                  onSubmit={handleAddCustomerSubmit}
+                  className="space-y-4 text-xs mt-2"
+                >
+                  <div className="space-y-1.5">
+                    <label className="text-slate-700 dark:text-zinc-350 font-bold">
+                      Full Name
                     </label>
                     <input
                       type="text"
-                      value={newCust.city}
+                      required
+                      value={newCust.name}
                       onChange={(e) =>
-                        setNewCust({ ...newCust, city: e.target.value })
+                        setNewCust({ ...newCust, name: e.target.value })
                       }
-                      className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
-                      placeholder="E.g., Mumbai"
+                      className="w-full bg-white dark:bg-zinc-900 border border-slate-205 dark:border-zinc-800 rounded-lg px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors text-xs"
+                      placeholder="E.g., Vani Malhotra"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-slate-700 dark:text-zinc-400 font-semibold">
-                      Gender
+                  <div className="space-y-1.5">
+                    <label className="text-slate-700 dark:text-zinc-350 font-bold">
+                      Email Address
                     </label>
-                    <select
-                      value={newCust.gender}
+                    <input
+                      type="email"
+                      required
+                      value={newCust.email}
                       onChange={(e) =>
-                        setNewCust({ ...newCust, gender: e.target.value })
+                        setNewCust({ ...newCust, email: e.target.value })
                       }
-                      className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
+                      className="w-full bg-white dark:bg-zinc-900 border border-slate-205 dark:border-zinc-800 rounded-lg px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors text-xs"
+                      placeholder="E.g., vani@gmail.com"
+                    />
                   </div>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full mt-2 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold cursor-pointer transition-all"
-                >
-                  Save Shopper
-                </button>
-              </form>
+                  <div className="space-y-1.5">
+                    <label className="text-slate-700 dark:text-zinc-350 font-bold">
+                      Phone Number
+                    </label>
+                    <input
+                      type="text"
+                      value={newCust.phone}
+                      onChange={(e) =>
+                        setNewCust({ ...newCust, phone: e.target.value })
+                      }
+                      className="w-full bg-white dark:bg-zinc-900 border border-slate-205 dark:border-zinc-800 rounded-lg px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors text-xs"
+                      placeholder="E.g., 9876543210"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-slate-700 dark:text-zinc-355 font-bold">
+                        City
+                      </label>
+                      <input
+                        type="text"
+                        value={newCust.city}
+                        onChange={(e) =>
+                          setNewCust({ ...newCust, city: e.target.value })
+                        }
+                        className="w-full bg-white dark:bg-zinc-900 border border-slate-205 dark:border-zinc-800 rounded-lg px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors text-xs"
+                        placeholder="E.g., Mumbai"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-slate-700 dark:text-zinc-355 font-bold">
+                        Gender
+                      </label>
+                      <select
+                        value={newCust.gender}
+                        onChange={(e) =>
+                          setNewCust({ ...newCust, gender: e.target.value })
+                        }
+                        className="w-full bg-white dark:bg-zinc-900 border border-slate-205 dark:border-zinc-800 rounded-lg px-3.5 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors text-xs cursor-pointer"
+                      >
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full mt-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold cursor-pointer transition-all shadow-lg shadow-indigo-600/10 flex items-center justify-center gap-1.5"
+                  >
+                    Save Shopper Profile
+                  </button>
+                </form>
+              </div>
             </div>
           )}
         </div>

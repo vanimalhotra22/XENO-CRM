@@ -79,3 +79,21 @@ export async function getCustomersInSegment(queryStr) {
   const profiles = await getCustomerProfiles();
   return profiles.filter((p) => evaluateCustomer(p, queryStr));
 }
+
+export async function syncAllSegmentsCount() {
+  const segments = await prisma.segment.findMany();
+  const profiles = await getCustomerProfiles();
+
+  for (const seg of segments) {
+    try {
+      const count = profiles.filter((p) => evaluateCustomer(p, seg.query)).length;
+      await prisma.segment.update({
+        where: { id: seg.id },
+        data: { customerCount: count },
+      });
+    } catch (e) {
+      console.error("Error syncing segment:", seg.name, e);
+    }
+  }
+}
+

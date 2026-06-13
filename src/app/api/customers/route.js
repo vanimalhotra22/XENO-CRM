@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { syncAllSegmentsCount } from "@/lib/segments";
 
 export async function GET(request) {
   try {
@@ -78,9 +79,13 @@ export async function POST(request) {
       data: { name, email, phone, city, gender },
     });
 
+    // Recalculate segment counts after customer is added manually
+    await syncAllSegmentsCount();
+
     return NextResponse.json({ success: true, customer });
   } catch (error) {
     console.error("Error creating customer:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+

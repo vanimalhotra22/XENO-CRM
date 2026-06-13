@@ -41,9 +41,11 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const statsRes = await fetch("/api/dashboard");
+      const [statsRes, ordersRes] = await Promise.all([
+        fetch("/api/dashboard"),
+        fetch("/api/orders?limit=5"),
+      ]);
       const statsData = await statsRes.json();
-      const ordersRes = await fetch("/api/orders?limit=5");
       const ordersData = await ordersRes.json();
 
       if (statsData.success) {

@@ -199,9 +199,11 @@ export default function CampaignsPage() {
 
   const fetchCampaignsAndSegments = async () => {
     try {
-      const campRes = await fetch("/api/campaigns?includeFailures=true");
+      const [campRes, segRes] = await Promise.all([
+        fetch("/api/campaigns?includeFailures=true"),
+        fetch("/api/segments"),
+      ]);
       const campData = await campRes.json();
-      const segRes = await fetch("/api/segments");
       const segData = await segRes.json();
 
       if (campData.success) setCampaigns(campData.campaigns);

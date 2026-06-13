@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { syncAllSegmentsCount } from "@/lib/segments";
 
 export async function POST(request) {
   try {
@@ -135,74 +136,3 @@ function parseCSVRow(text) {
   return result;
 }
 
-// Helper to recalculate segment counts after customer data changes
-async function syncAllSegmentsCount() {
-  const segments = await prisma.segment.findMany();
-  const customers = await prisma.customer.findMany({
-    include: { orders: true },
-  });
-
-  const profiles = customers.map((c) => {
-    const deliveredOrders = c.orders.filter((o) => o.status === "DELIVERED");
-    const totalSpent = deliveredOrders.reduce((sum, o) => sum + o.amount, 0);
-    const orderCount = deliveredOrders.length;
-    let lastOrderDaysAgo = 9999;
-    if (deliveredOrders.length > 0) {
-      const orderDates = deliveredOrders.map((o) =>
-        new Date(o.createdAt).getTime(),
-      );
-      const lastOrderTime = Math.max(...orderDates);
-      lastOrderDaysAgo = Math.floor(
-        (Date.now() - lastOrderTime) / (1000 * 60 * 60 * 24),
-      );
-    }
-
-    return {
-      id: c.id,
-      name: c.name,
-      email: c.email,
-      phone: c.phone,
-      city: c.city,
-      gender: c.gender,
-      createdAt: c.createdAt,
-      totalSpent,
-      orderCount,
-      lastOrderDaysAgo,
-    };
-  });
-
-  for (const seg of segments) {
-    try {
-      const query = JSON.parse(seg.query);
-      let count = 0;
-      for (const p of profiles) {
-        if (!query.conditions || query.conditions.length === 0) {
-          count++;
-          continue;
-        }
-        const match = query.conditions.every((cond) => {
-          const val = p[cond.field];
-          if (cond.operator === "gt") return Number(val) > Number(cond.value);
-          if (cond.operator === "lt") return Number(val) < Number(cond.value);
-          if (cond.operator === "eq")
-            return (
-              String(val).toLowerCase() === String(cond.value).toLowerCase()
-            );
-          if (cond.operator === "contains")
-            return String(val)
-              .toLowerCase()
-              .includes(String(cond.value).toLowerCase());
-          return false;
-        });
-        if (match) count++;
-      }
-
-      await prisma.segment.update({
-        where: { id: seg.id },
-        data: { customerCount: count },
-      });
-    } catch (e) {
-      console.error("Error syncing segment:", seg.name, e);
-    }
-  }
-}

@@ -7,38 +7,38 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get("limit") || "50");
 
-    const orders = await prisma.order.findMany({
-      include: {
-        customer: {
-          select: {
-            name: true,
-            email: true,
+    const [orders, topSpent] = await Promise.all([
+      prisma.order.findMany({
+        include: {
+          customer: {
+            select: {
+              name: true,
+              email: true,
+            },
           },
         },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: limit,
-    });
-
-    // Compute top customers spending list using database GroupBy aggregation (extremely fast)
-    const topSpent = await prisma.order.groupBy({
-      by: ["customerId"],
-      where: { status: "DELIVERED" },
-      _sum: {
-        amount: true,
-      },
-      _count: {
-        id: true,
-      },
-      orderBy: {
-        _sum: {
-          amount: "desc",
+        orderBy: {
+          createdAt: "desc",
         },
-      },
-      take: 10,
-    });
+        take: limit,
+      }),
+      prisma.order.groupBy({
+        by: ["customerId"],
+        where: { status: "DELIVERED" },
+        _sum: {
+          amount: true,
+        },
+        _count: {
+          id: true,
+        },
+        orderBy: {
+          _sum: {
+            amount: "desc",
+          },
+        },
+        take: 10,
+      })
+    ]);
 
     const customerIds = topSpent.map((ts) => ts.customerId);
     const topCustDetails = await prisma.customer.findMany({

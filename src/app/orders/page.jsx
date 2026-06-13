@@ -38,9 +38,11 @@ export default function OrdersPage() {
 
   const fetchOrdersAndCustomers = async () => {
     try {
-      const ordRes = await fetch("/api/orders");
+      const [ordRes, custRes] = await Promise.all([
+        fetch("/api/orders"),
+        fetch("/api/customers"),
+      ]);
       const ordData = await ordRes.json();
-      const custRes = await fetch("/api/customers");
       const custData = await custRes.json();
 
       if (ordData.success) {
